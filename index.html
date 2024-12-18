@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agendamento de Procedimentos</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #4CAF50;
+            --secondary-color: #F1F1F1;
+            --accent-color: #8BC34A;
+            --error-color: #F44336;
+            --background-color: #f4f7fc;
+            --container-bg: white;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            --border-color: #ddd;
+            --font-family: 'Poppins', sans-serif;
+            --font-size: 16px;
+            --label-color: #333;
+            --input-font-size: 14px;
+            --input-padding: 14px;
+        }
+
+        body {
+            font-family: var(--font-family);
+            background-color: var(--background-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background: var(--container-bg);
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 20px var(--shadow-color);
+            width: 100%;
+            max-width: 500px;
+            display: grid;
+            gap: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--label-color);
+            font-size: 28px;
+            font-weight: 600;
+        }
+
+        label {
+            font-size: var(--font-size);
+            color: var(--label-color);
+            margin-top: 12px;
+        }
+
+        input[type="text"],
+        input[type="date"],
+        input[type="cpf"],
+        input[type="time"],
+        select {
+            width: 100%;
+            padding: var(--input-padding);
+            margin-top: 8px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: var(--input-font-size);
+            background-color: var(--secondary-color);
+            transition: all 0.3s ease;
+        }
+
+        input[type="text"]:focus,
+        input[type="date"]:focus,
+        input[type="cpf"]:focus,
+        input[type="time"]:focus,
+        select:focus {
+            border-color: var(--primary-color);
+            background-color: #fff;
+            outline: none;
+        }
+
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            padding: var(--input-padding);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 16px;
+            font-weight: 500;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: var(--accent-color);
+        }
+
+        .alert {
+            color: var(--error-color);
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+        }
+
+        .additional-fields {
+            display: none; /* Inicialmente, os campos adicionais estão ocultos */
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+                max-width: 100%;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            input[type="text"],
+            input[type="date"],
+            input[type="cpf"],
+            input[type="time"],
+            select {
+                font-size: 16px;
+                padding: 12px;
+            }
+
+            button {
+                font-size: 18px;
+                padding: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Agendar Procedimento</h1>
+    <form id="agendamentoForm">
+        <label for="nome">Nome Completo</label>
+        <input type="text" id="nome" name="nome" required placeholder="Digite seu nome">
+
+        <label for="cpf">CPF</label>
+        <input type="text" id="cpf" name="cpf" pattern="\d{3}\.\d{3}\.\d{3}-\d{2}" placeholder="XXX.XXX.XXX-XX" required>
+
+        <label for="dataNascimento">Data de Nascimento</label>
+        <input type="date" id="dataNascimento" name="dataNascimento" required>
+
+        <label for="procedimento">Procedimento</label>
+        <select id="procedimento" name="procedimento" required>
+            <option value="Consulta">Consulta</option>
+            <option value="Exame">Exame</option>
+            <option value="Cirurgia">Cirurgia</option>
+        </select>
+
+        <label for="status">Status</label>
+        <select id="status" name="status" required>
+            <option value="Agendado">Agendado</option>
+            <option value="Concluído">Concluído</option>
+            <option value="Cancelado">Cancelado</option>
+        </select>
+
+        <!-- Campos adicionais (inicialmente ocultos) -->
+        <div id="additionalFields" class="additional-fields">
+            <label for="numeroContato">Número de Contato</label>
+            <input type="text" id="numeroContato" name="numeroContato" placeholder="Ex: +55 11 91234-5678" required>
+
+            <label for="local">Local do Procedimento</label>
+            <input type="text" id="local" name="local" required placeholder="Informe o local">
+
+            <label for="endereco">Endereço do Local</label>
+            <input type="text" id="endereco" name="endereco" required placeholder="Informe o endereço">
+
+            <label for="horario">Horário do Procedimento</label>
+            <input type="time" id="horario" name="horario" required>
+        </div>
+
+        <button type="submit">Agendar</button>
+    </form>
+    <div id="alertMessage" class="alert"></div>
+</div>
+
+<script>
+    // Função para exibir ou ocultar campos adicionais dependendo do status
+    document.getElementById('status').addEventListener('change', function() {
+        const status = this.value;
+        const additionalFields = document.getElementById('additionalFields');
+
+        if (status === 'Agendado') {
+            additionalFields.style.display = 'block'; // Exibe os campos adicionais
+        } else {
+            additionalFields.style.display = 'none'; // Oculta os campos adicionais
+        }
+    });
+
+    document.getElementById('agendamentoForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const nome = document.getElementById('nome').value;
+        const cpf = document.getElementById('cpf').value;
+        const dataNascimento = document.getElementById('dataNascimento').value;
+        const procedimento = document.getElementById('procedimento').value;
+        const status = document.getElementById('status').value;
+
+        // Variáveis para campos adicionais
+        const numeroContato = document.getElementById('numeroContato').value;
+        const local = document.getElementById('local').value;
+        const endereco = document.getElementById('endereco').value;
+        const horario = document.getElementById('horario').value;
+
+        // Verifica se todos os campos obrigatórios estão preenchidos
+        if (!nome || !cpf || !dataNascimento || !procedimento || !status) {
+            document.getElementById('alertMessage').innerText = "Por favor, preencha todos os campos corretamente.";
+            return;
+        }
+
+        // Verifica se o status é "Agendado" e se os campos adicionais foram preenchidos
+        if (status === 'Agendado') {
+            if (!numeroContato || !local || !endereco || !horario) {
+                document.getElementById('alertMessage').innerText = "Por favor, preencha os campos adicionais.";
+                return;
+            }
+
+            // Formata a mensagem a ser enviada via WhatsApp
+            const mensagem = `*Agendamento Confirmado!*\n\nNome: ${nome}\nCPF: ${cpf}\nData de Nascimento: ${dataNascimento}\nProcedimento: ${procedimento}\nLocal: ${local}\nEndereço: ${endereco}\nHorário: ${horario}`;
+
+            // URL do WhatsApp Web para enviar a mensagem
+            const whatsappUrl = `https://wa.me/${numeroContato.replace(/\D/g, '')}?text=${encodeURIComponent(mensagem)}`;
+
+            // Abre o WhatsApp Web com a mensagem predefinida
+            window.open(whatsappUrl, '_blank');
+        }
+
+        // Simula uma ação de sucesso (aqui você pode adicionar a chamada à API)
+        alert("Agendamento realizado com sucesso!");
+        document.getElementById('agendamentoForm').reset();
+        document.getElementById('alertMessage').innerText = "";
+    });
+</script>
+
+</body>
+</html>

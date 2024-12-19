@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -20,6 +21,10 @@
             --label-color: #333;
             --input-font-size: 14px;
             --input-padding: 14px;
+        }
+
+        * {
+            box-sizing: border-box;
         }
 
         body {
@@ -58,7 +63,7 @@
 
         input[type="text"],
         input[type="date"],
-        input[type="cpf"],
+        input[type="tel"],
         input[type="time"],
         select {
             width: 100%;
@@ -73,12 +78,17 @@
 
         input[type="text"]:focus,
         input[type="date"]:focus,
-        input[type="cpf"]:focus,
+        input[type="tel"]:focus,
         input[type="time"]:focus,
         select:focus {
             border-color: var(--primary-color);
             background-color: #fff;
             outline: none;
+        }
+
+        input:invalid,
+        select:invalid {
+            border-color: var(--error-color);
         }
 
         button {
@@ -106,7 +116,12 @@
         }
 
         .additional-fields {
-            display: none; /* Inicialmente, os campos adicionais estão ocultos */
+            display: none;
+        }
+
+        .error {
+            border-color: var(--error-color);
+            background-color: #fce4e4;
         }
 
         @media (max-width: 600px) {
@@ -121,7 +136,7 @@
 
             input[type="text"],
             input[type="date"],
-            input[type="cpf"],
+            input[type="tel"],
             input[type="time"],
             select {
                 font-size: 16px;
@@ -135,111 +150,246 @@
         }
     </style>
 </head>
+
 <body>
 
-<div class="container">
-    <h1>Agendar Procedimento</h1>
-    <form id="agendamentoForm">
-        <label for="nome">Nome Completo</label>
-        <input type="text" id="nome" name="nome" required placeholder="Digite seu nome">
+    <div class="container">
+        <h1>Agendar Procedimento</h1>
+        <form id="agendamentoForm">
+            <label for="nome">Nome Completo</label>
+            <input type="text" id="nome" name="nome" required placeholder="Digite seu nome" aria-label="Nome Completo"
+                aria-required="true">
 
-        <label for="cpf">CPF</label>
-        <input type="text" id="cpf" name="cpf" pattern="\d{3}\.\d{3}\.\d{3}-\d{2}" placeholder="XXX.XXX.XXX-XX" required>
+            <label for="cpf">CPF</label>
+            <input type="text" id="cpf" name="cpf" pattern="\d{3}\.\d{3}\.\d{3}-\d{2}" placeholder="XXX.XXX.XXX-XX"
+                required aria-label="CPF" aria-required="true" aria-describedby="cpfHelp">
+            <small id="cpfHelp" style="display:block; color: #666;">Informe seu CPF no formato XXX.XXX.XXX-XX.</small>
 
-        <label for="dataNascimento">Data de Nascimento</label>
-        <input type="date" id="dataNascimento" name="dataNascimento" required>
+            <label for="dataNascimento">Data de Nascimento</label>
+            <input type="date" id="dataNascimento" name="dataNascimento" required aria-label="Data de Nascimento"
+                aria-required="true">
 
-        <label for="procedimento">Procedimento</label>
-        <select id="procedimento" name="procedimento" required>
-            <option value="Consulta">Consulta</option>
-            <option value="Exame">Exame</option>
-            <option value="Cirurgia">Cirurgia</option>
-        </select>
+            <label for="procedimento">Procedimento</label>
+            <select id="procedimento" name="procedimento" required aria-label="Procedimento" aria-required="true">
+                <option value="Consulta">Consulta</option>
+                <option value="Exame">Exame</option>
+                <option value="Cirurgia">Cirurgia</option>
+            </select>
 
-        <label for="status">Status</label>
-        <select id="status" name="status" required>
-            <option value="Agendado">Agendado</option>
-            <option value="Concluído">Concluído</option>
-            <option value="Cancelado">Cancelado</option>
-        </select>
+            <label for="status">Status</label>
+            <select id="status" name="status" required aria-label="Status" aria-required="true">
+                <option value="Agendado">Agendado</option>
+                <option value="Concluído">Concluído</option>
+                <option value="Cancelado">Cancelado</option>
+            </select>
 
-        <!-- Campos adicionais (inicialmente ocultos) -->
-        <div id="additionalFields" class="additional-fields">
-            <label for="numeroContato">Número de Contato</label>
-            <input type="text" id="numeroContato" name="numeroContato" placeholder="Ex: +55 11 91234-5678" required>
+            <div id="additionalFields" class="additional-fields">
+                <label for="numeroContato">Número de Contato</label>
+                <input type="tel" id="numeroContato" name="numeroContato" placeholder="Ex: +55 11 91234-5678" required
+                    aria-label="Número de Contato" aria-required="true">
 
-            <label for="local">Local do Procedimento</label>
-            <input type="text" id="local" name="local" required placeholder="Informe o local">
+                <label for="local">Local do Procedimento</label>
+                <input type="text" id="local" name="local" required placeholder="Informe o local"
+                    aria-label="Local do Procedimento" aria-required="true">
 
-            <label for="endereco">Endereço do Local</label>
-            <input type="text" id="endereco" name="endereco" required placeholder="Informe o endereço">
+                <label for="endereco">Endereço do Local</label>
+                <input type="text" id="endereco" name="endereco" required placeholder="Informe o endereço"
+                    aria-label="Endereço do Local" aria-required="true">
 
-            <label for="horario">Horário do Procedimento</label>
-            <input type="time" id="horario" name="horario" required>
-        </div>
+                <label for="horario">Horário do Procedimento</label>
+                <input type="time" id="horario" name="horario" required aria-label="Horário do Procedimento"
+                    aria-required="true">
+            </div>
 
-        <button type="submit">Agendar</button>
-    </form>
-    <div id="alertMessage" class="alert"></div>
-</div>
+            <button type="submit">Agendar</button>
+        </form>
+        <div id="alertMessage" class="alert"></div>
+    </div>
 
-<script>
-    // Função para exibir ou ocultar campos adicionais dependendo do status
-    document.getElementById('status').addEventListener('change', function() {
-        const status = this.value;
-        const additionalFields = document.getElementById('additionalFields');
+    <script src="https://apis.google.com/js/api.js"></script>
+    <script>
+        // Função para verificar a validade do CPF
+        function validarCPF(cpf) {
+            cpf = cpf.replace(/[^\d]+/g, ''); // Remove qualquer coisa que não seja número
 
-        if (status === 'Agendado') {
-            additionalFields.style.display = 'block'; // Exibe os campos adicionais
-        } else {
-            additionalFields.style.display = 'none'; // Oculta os campos adicionais
+            if (cpf.length !== 11) return false;
+
+            // Verifica os números repetidos
+            if (/^(\d)\1{10}$/.test(cpf)) return false;
+
+            let soma = 0;
+            let resto;
+
+            // Verifica primeiro dígito verificador
+            for (let i = 0; i < 9; i++) {
+                soma += parseInt(cpf.charAt(i)) * (10 - i);
+            }
+            resto = soma % 11;
+            if (resto === 10 || resto === 11) resto = 0;
+            if (resto !== parseInt(cpf.charAt(9))) return false;
+
+            soma = 0;
+            // Verifica segundo dígito verificador
+            for (let i = 0; i < 10; i++) {
+                soma += parseInt(cpf.charAt(i)) * (11 - i);
+            }
+            resto = soma % 11;
+            if (resto === 10 || resto === 11) resto = 0;
+            if (resto !== parseInt(cpf.charAt(10))) return false;
+
+            return true;
         }
-    });
 
-    document.getElementById('agendamentoForm').addEventListener('submit', function(e) {
-        e.preventDefault();
+        // Máscara de CPF
+        document.getElementById('cpf').addEventListener('input', function (e) {
+            e.target.value = e.target.value.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
+        });
 
-        const nome = document.getElementById('nome').value;
-        const cpf = document.getElementById('cpf').value;
-        const dataNascimento = document.getElementById('dataNascimento').value;
-        const procedimento = document.getElementById('procedimento').value;
-        const status = document.getElementById('status').value;
+        // Máscara de número de telefone
+        document.getElementById('numeroContato').addEventListener('input', function (e) {
+            e.target.value = e.target.value.replace(/(\+\d{2})?(\d{2})(\d{5})(\d{4})/, "$1 $2 $3-$4");
+        });
 
-        // Variáveis para campos adicionais
-        const numeroContato = document.getElementById('numeroContato').value;
-        const local = document.getElementById('local').value;
-        const endereco = document.getElementById('endereco').value;
-        const horario = document.getElementById('horario').value;
+        // Função para exibir ou ocultar campos adicionais dependendo do status
+        document.getElementById('status').addEventListener('change', function () {
+            const status = this.value;
+            const additionalFields = document.getElementById('additionalFields');
 
-        // Verifica se todos os campos obrigatórios estão preenchidos
-        if (!nome || !cpf || !dataNascimento || !procedimento || !status) {
-            document.getElementById('alertMessage').innerText = "Por favor, preencha todos os campos corretamente.";
-            return;
-        }
+            if (status === 'Agendado') {
+                additionalFields.style.display = 'block'; // Exibe os campos adicionais
+            } else {
+                additionalFields.style.display = 'none'; // Oculta os campos adicionais
+                document.getElementById('numeroContato').value = '';
+                document.getElementById('local').value = '';
+                document.getElementById('endereco').value = '';
+                document.getElementById('horario').value = '';
+            }
+        });
 
-        // Verifica se o status é "Agendado" e se os campos adicionais foram preenchidos
-        if (status === 'Agendado') {
-            if (!numeroContato || !local || !endereco || !horario) {
-                document.getElementById('alertMessage').innerText = "Por favor, preencha os campos adicionais.";
+        // Função para envio do formulário
+        document.getElementById('agendamentoForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const nome = document.getElementById('nome').value;
+            const cpf = document.getElementById('cpf').value;
+            const dataNascimento = document.getElementById('dataNascimento').value;
+            const procedimento = document.getElementById('procedimento').value;
+            const status = document.getElementById('status').value;
+
+            const numeroContato = document.getElementById('numeroContato').value;
+            const local = document.getElementById('local').value;
+            const endereco = document.getElementById('endereco').value;
+            const horario = document.getElementById('horario').value;
+
+            // Verificação de campos obrigatórios
+            if (!nome || !cpf || !dataNascimento || !procedimento || !status) {
+                document.getElementById('alertMessage').innerText = "Por favor, preencha todos os campos corretamente.";
                 return;
             }
 
-            // Formata a mensagem a ser enviada via WhatsApp
-            const mensagem = `*Agendamento Confirmado!*\n\nNome: ${nome}\nCPF: ${cpf}\nData de Nascimento: ${dataNascimento}\nProcedimento: ${procedimento}\nLocal: ${local}\nEndereço: ${endereco}\nHorário: ${horario}`;
+            // Verifica se o status é "Agendado" e se os campos adicionais foram preenchidos
+            if (status === 'Agendado') {
+                if (!numeroContato || !local || !endereco || !horario) {
+                    document.getElementById('alertMessage').innerText = "Por favor, preencha os campos adicionais.";
+                    return;
+                }
 
-            // URL do WhatsApp Web para enviar a mensagem
-            const whatsappUrl = `https://wa.me/${numeroContato.replace(/\D/g, '')}?text=${encodeURIComponent(mensagem)}`;
+                // Formatação da mensagem para WhatsApp
+                const mensagem = `*Agendamento Confirmado!*\n\nNome: ${nome}\nCPF: ${cpf}\nData de Nascimento: ${dataNascimento}\nProcedimento: ${procedimento}\nLocal: ${local}\nEndereço: ${endereco}\nHorário: ${horario}`;
 
-            // Abre o WhatsApp Web com a mensagem predefinida
-            window.open(whatsappUrl, '_blank');
+                // URL do WhatsApp Web
+                const whatsappUrl = `https://wa.me/${numeroContato.replace(/\D/g, '')}?text=${encodeURIComponent(mensagem)}`;
+                window.open(whatsappUrl, '_blank');
+            }
+
+            alert("Agendamento realizado com sucesso!");
+            document.getElementById('agendamentoForm').reset();
+            document.getElementById('alertMessage').innerText = "";
+        });
+
+        // Função para carregar os procedimentos e enviar os dados para o Web App do Google Apps Script
+        function carregarProcedimentos() {
+            // URL do Web App do Google Apps Script
+            const webAppUrl = 'https://script.google.com/macros/s/AKfycbxLmhxwOqZln_fC175Yi-du-fUgsILpT-bsDiuXLQ15e7G1IlfSPVLJmA6TgQeGZmct/exec'; // Substitua pela URL do seu Web App
         }
 
-        // Simula uma ação de sucesso (aqui você pode adicionar a chamada à API)
-        alert("Agendamento realizado com sucesso!");
-        document.getElementById('agendamentoForm').reset();
-        document.getElementById('alertMessage').innerText = "";
-    });
-</script>
+        // Quando o formulário for submetido
+        document.getElementById('formAgendamento').addEventListener('submit', function (e) {
+            e.preventDefault();  // Impede o envio tradicional do formulário
+        })
+
+        // Captura os valores dos campos do formulário
+        const nome = document.getElementById('nome').value;
+        const data = document.getElementById('data').value;
+        const hora = document.getElementById('hora').value;
+        const procedimento = document.getElementById('procedimento').value;
+
+        // Monta o objeto com os dados a serem enviados
+        const dataToSend = {
+            nome: nome,
+            data: data,
+            hora: hora,
+            procedimento: procedimento
+        };
+
+        function sendDataToSheet(data) {
+            // URL do Web App do Google Apps Script
+            const webAppUrl = 'https://script.google.com/macros/s/AKfycbxLmhxwOqZln_fC175Yi-du-fUgsILpT-bsDiuXLQ15e7G1IlfSPVLJmA6TgQeGZmct/exec';
+
+            // Envia os dados para o Web App via POST
+            fetch(webAppUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',  // Definindo o cabeçalho para JSON
+                },
+                body: JSON.stringify(data)  // Certifique-se de que os dados estão sendo enviados como JSON
+            })
+                .then(response => response.json())
+                .then(result => {
+                    if (result.result === "Success") {
+                        alert('Agendamento realizado com sucesso!');
+                    } else {
+                        alert('Erro ao realizar o agendamento: ' + result.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Erro ao enviar dados para o Apps Script:', error);
+                    alert('Erro ao realizar o agendamento. Tente novamente.');
+                });
+        }
+
+        // Função para enviar os dados ao Web App do Google Apps Script
+        function sendDataToSheet(data) {
+            // Envia os dados para o Web App via POST
+            fetch('https://script.google.com/macros/s/AKfycbxLmhxwOqZln_fC175Yi-du-fUgsILpT-bsDiuXLQ15e7G1IlfSPVLJmA6TgQeGZmct/exec', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)  // Converte os dados para JSON
+            })
+                .then(response => response.json())
+                .then(result => {
+                    if (result.result === "Success") {
+                        alert('Agendamento realizado com sucesso!');
+                    } else {
+                        alert('Erro ao realizar o agendamento: ' + result.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Erro ao enviar dados para o Apps Script:', error);
+                    alert('Erro ao realizar o agendamento. Tente novamente.');
+                });
+        }
+
+        // Inicia a função quando a página carregar
+        document.addEventListener("DOMContentLoaded", function () {
+            carregarProcedimentos();
+        });
+
+
+    </script>
 
 </body>
+
 </html>
